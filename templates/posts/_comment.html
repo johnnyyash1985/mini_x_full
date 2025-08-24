@@ -6,7 +6,9 @@
   <div class="text-sm text-gray-700 font-medium">@{{ comment.user.username }}</div>
   <div class="text-xs text-gray-500">{{ comment.created_at|timesince }} ago</div>
 
-  <div class="mt-1 text-gray-800 whitespace-pre-line">{{ comment.content }}</div>
+  <div class="mt-1 text-gray-800 whitespace-pre-line">
+    {{ comment.content }}
+  </div>
 
   <div class="mt-2 flex items-center gap-5 text-gray-600 action-row">
     <a class="hover:opacity-70 inline-flex items-center gap-1"
@@ -29,4 +31,15 @@
       </a>
     {% endif %}
   </div>
+
+  {% if comment.replies.exists %}
+    <div class="mt-3 ml-6 space-y-2">
+      {% for r in comment.replies.all|slice:":2" %}
+        {% include 'posts/_comment_min.html' with comment=r only %}
+      {% endfor %}
+      {% if comment.replies.count > 2 %}
+        <a href="{% url 'comment_detail' comment.id %}" class="text-sm text-gray-500 hover:underline">Show more replies</a>
+      {% endif %}
+    </div>
+  {% endif %}
 </div>

@@ -1,63 +1,19 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="max-w-2xl mx-auto">
+<div class="mx-auto max-w-3xl space-y-4">
 
-  <!-- Parent post header -->
-  <div class="bg-white rounded-2xl shadow p-4 mb-3">
-    <div class="text-sm text-gray-500">
-      <span class="font-semibold">@{{ post.user.username }}</span>
-      <span> · {{ post.created|timesince }} ago</span>
-      <a class="float-right text-xs bg-gray-100 rounded-full px-2 py-1" href="{% url 'post_detail' post.id %}">Back to post</a>
-    </div>
-    <div class="mt-2">{{ post.content }}</div>
+  <div class="flex items-center justify-between">
+    <button onclick="history.back()" class="text-sm text-gray-600 hover:underline">&larr; Back</button>
   </div>
 
-  <!-- Root comment -->
-  <div class="bg-white rounded-2xl shadow p-3">
-    <div class="text-sm text-gray-700 font-medium">@{{ root_comment.user.username }}</div>
-    <div class="mt-1">{{ root_comment.content }}</div>
-    <div class="mt-2 flex items-center gap-5 text-gray-600">
-      <a class="hover:opacity-70" href="{% url 'like_comment' root_comment.id %}?next={{ request.get_full_path|urlencode }}" title="Like">
-        <i class="fa-regular fa-heart"></i> <span>{{ root_comment.likes.count }}</span>
-      </a>
-      <a class="hover:opacity-70" href="{% url 'repost_comment' root_comment.id %}?next={{ request.get_full_path|urlencode }}" title="Repost">
-        <i class="fa-solid fa-retweet"></i>
-      </a>
-    </div>
-  </div>
+  {% include 'posts/_comment.html' with comment=comment %}
 
-  <!-- Direct replies to root_comment (first level here; click each to go deeper) -->
-  <div class="mt-3 space-y-2">
-    {% for c in root_comment.replies.all %}
-      <div class="bg-white rounded-2xl shadow p-3 ml-6">
-        <div class="text-sm text-gray-700 font-medium">@{{ c.user.username }}</div>
-        <div class="mt-1">{{ c.content }}</div>
-        <div class="mt-2 flex items-center gap-5 text-gray-600">
-          <a class="hover:opacity-70" href="{% url 'like_comment' c.id %}?next={{ request.get_full_path|urlencode }}" title="Like">
-            <i class="fa-regular fa-heart"></i> <span>{{ c.likes.count }}</span>
-          </a>
-          <a class="hover:opacity-70" href="{% url 'repost_comment' c.id %}?next={{ request.get_full_path|urlencode }}" title="Repost">
-            <i class="fa-solid fa-retweet"></i>
-          </a>
-          <a class="hover:opacity-70" href="{% url 'comment_detail' c.id %}" title="View thread / Reply">
-            <i class="fa-regular fa-comment"></i>
-            {% if c.replies.count %}<span>{{ c.replies.count }}</span>{% endif %}
-          </a>
-        </div>
-      </div>
-    {% empty %}
-      <p class="text-sm text-gray-500 mt-2">No replies yet.</p>
-    {% endfor %}
-  </div>
-
-  <!-- Reply to root_comment -->
-  <form action="{% url 'reply_comment' root_comment.id %}" method="post" class="bg-white rounded-2xl shadow p-3 mt-4">
+  <form action="{% url 'reply_to_comment' comment.id %}" method="post" class="bg-white rounded-2xl shadow p-3">
     {% csrf_token %}
     <input name="content" maxlength="200" class="w-full border rounded-xl p-2" placeholder="Write a reply…" />
-    <div class="mt-2 text-right">
-      <button class="bg-black text-white rounded-xl px-4 py-1">Reply</button>
+    <div class="mt-2 flex justify-end">
+      <button class="bg-black text-white rounded-xl px-4 py-2">Reply</button>
     </div>
   </form>
-
 </div>
 {% endblock %}

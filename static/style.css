@@ -18,3 +18,84 @@
 .post-box .actions a:hover {
     color: #000;
 }
+
+/* --- Clickable post cards --- */
+.post-card { position: relative; }
+.stretched-link {
+  position: absolute;
+  inset: 0;          /* top:0 right:0 bottom:0 left:0 */
+  z-index: 5;        /* sits under the controls below */
+}
+.post-card .action-row,
+.post-card .icon-btn,
+.post-card .chip,
+.post-card .btn-primary,
+.post-card form,
+.post-card a[href*="like_"],
+.post-card a[href*="repost"],
+.post-card a[href*="delete_post"] {
+  position: relative;
+  z-index: 10;       /* keep interactive controls above the overlay */
+}
+
+/* small helpers (if not already present) */
+.card { background:#fff; border-radius:16px; box-shadow:0 1px 2px rgba(0,0,0,.05); }
+.btn-primary { background:#000; color:#fff; }
+.chip { font-size:.75rem; color:#6b7280; background:#f3f4f6; padding:.15rem .5rem; border-radius:999px; }
+.icon-btn { color:#6b7280; }
+.icon-btn:hover { opacity:.75; }
+
+/* --- Base cards / tiles --- */
+.card {
+  background: #fff !important;
+  border-radius: 16px !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.03) !important;
+  border: 1px solid rgba(0,0,0,.06) !important;
+}
+
+/* Spacing helpers (used by templates) */
+.mb-4 { margin-bottom: 1rem; }
+.p-3 { padding: .75rem; }
+
+/* --- Click-anywhere overlay for posts/comments --- */
+.post-card, .comment-card { position: relative; }
+.stretched-link {
+  position: absolute; inset: 0; z-index: 5;
+}
+/* Keep buttons/links working above the overlay */
+.post-card .action-row,
+.post-card .icon-btn,
+.post-card .chip,
+.post-card a,
+.comment-card .action-row,
+.comment-card a,
+.comment-card button {
+  position: relative; z-index: 10;
+}
+
+/* Small UI bits */
+.btn-primary { background:#000; color:#fff; border-radius:12px; }
+.btn-primary:hover { opacity:.9; }
+.icon-btn { color:#6b7280; }
+.icon-btn:hover { opacity:.75; }
+.chip { font-size:.75rem; color:#6b7280; background:#f3f4f6; padding:.15rem .5rem; border-radius:999px; }
+
+/* ---- Card / Tile ------------------------------------------------------- */
+.card {
+  background: #fff !important;
+  border-radius: 16px !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.03) !important;
+  border: 1px solid rgba(0,0,0,.06) !important;
+}
+.post-card, .comment-card { position: relative; }
+
+/* Make whole card clickable; keep buttons usable above it */
+.stretched-link { position:absolute; inset:0; z-index:5; }
+.action-row, .icon-btn, .chip, .post-card a, .comment-card a, .comment-card button { z-index:10; position:relative; }
+
+/* Small helpers */
+.p-3 { padding:.75rem; } .mb-4 { margin-bottom:1rem; }
+.btn-primary { background:#000; color:#fff; border-radius:12px; padding:.5rem 1rem; }
+.btn-primary:hover { opacity:.9; }
+.icon-btn { color:#6b7280; } .icon-btn:hover { opacity:.75; }
+.chip { font-size:.75rem; color:#6b7280; background:#f3f4f6; padding:.15rem .5rem; border-radius:999px; }
