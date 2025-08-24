@@ -1,0 +1,20 @@
+<div class="bg-white rounded-2xl shadow p-3 {% if not is_root %}ml-6{% endif %}">
+  <div class="text-sm text-gray-700 font-medium">@{{ comment.user.username }}</div>
+  <div class="mt-1">{{ comment.content }}</div>
+  <div class="mt-2 flex items-center gap-5 text-gray-600">
+    <a class="hover:opacity-70" href="{% url 'like_comment' comment.id %}?next={{ request.get_full_path|urlencode }}" title="Like">
+      <i class="fa-regular fa-heart"></i>
+      <span>{{ comment.likes.count }}</span>
+    </a>
+    <a class="hover:opacity-70" href="{% url 'repost_comment' comment.id %}?next={{ request.get_full_path|urlencode }}" title="Repost">
+      <i class="fa-solid fa-retweet"></i>
+    </a>
+    <a class="hover:opacity-70" href="{% url 'comment_detail' comment.id %}" title="Open thread">
+      <i class="fa-regular fa-comment"></i>
+      {% if comment.replies.count %}<span>{{ comment.replies.count }}</span>{% endif %}
+    </a>
+  </div>
+</div>
+{% for child in comment.replies.all %}
+  {% include 'posts/_comment_thread.html' with comment=child is_root=False %}
+{% endfor %}
