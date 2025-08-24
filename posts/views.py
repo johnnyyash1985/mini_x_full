@@ -18,7 +18,7 @@ def feed(request):
         content = request.POST.get('content')
         if content:
             Post.objects.create(user=request.user, content=content)
-            return redirect("post_detail", post_id=post_id)
+            return redirect("feed")
 
     # Suggestions: not me, not already followed
     exclude_ids = set(following_ids)
@@ -33,13 +33,13 @@ def like_post(request, post_id):
         post.likes.remove(request.user)
     else:
         post.likes.add(request.user)
-    return redirect("post_detail", post_id=post_id)
+    return redirect("feed")
 
 @login_required
 def repost(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     Post.objects.create(user=request.user, content=post.content, reposted_from=post)
-    return redirect("post_detail", post_id=post_id)
+    return redirect("feed")
 
 @login_required
 def add_comment(request, post_id):
@@ -48,7 +48,7 @@ def add_comment(request, post_id):
         content = request.POST.get('content')
         if content:
             Comment.objects.create(post=post, user=request.user, content=content)
-    return redirect("post_detail", post_id=post_id)
+    return redirect("feed")
 
 from django.http import HttpResponse
 
@@ -75,7 +75,7 @@ def like_comment(request, comment_id):
         c.likes.remove(request.user)
     else:
         c.likes.add(request.user)
-    return redirect("post_detail", post_id=post_id)
+    return redirect("feed")
 
 @login_required
 def reply_comment(request, comment_id):
@@ -89,7 +89,7 @@ def reply_comment(request, comment_id):
                 parent=c,
                 content=text[:200],
             )
-    return redirect("post_detail", post_id=post_id)
+    return redirect("feed")
 
 @login_required
 def repost_comment(request, comment_id):
@@ -101,4 +101,4 @@ def repost_comment(request, comment_id):
         content=quote[:280],
         reposted_from=c.post
     )
-    return redirect("post_detail", post_id=post_id)
+    return redirect("feed")
