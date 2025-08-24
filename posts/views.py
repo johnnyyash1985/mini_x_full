@@ -174,3 +174,42 @@ def comment_detail(request, comment_id):
     }
     return render(request, "posts/comment_detail.html", context)
 
+
+from django.http import HttpResponseForbidden
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, redirect
+
+@login_required
+def delete_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    if post.user != request.user:
+        return HttpResponseForbidden("Not allowed")
+    if request.method == "POST":
+        post.delete()
+        next_url = request.GET.get("next")
+        if next_url:
+            return redirect(next_url)
+        return redirect("feed")
+    # If someone GETs the URL, just send them back to the post
+    return redirect("post_detail", post_id=post_id)
+
+@login_required
+def delete_comment(request, comment_id):
+    comment = get_object_or_404(Comment, id=comment_id)
+    if comment.user != request.user:
+        return HttpResponseForbidden("Not allowed")
+    parent_post_id = comment.post_id
+    if request.method == "POST":
+        comment.delete()
+        next_url = request.GET.get("next")
+        if next_url:
+            return redirect(next_url)
+        return redirect("post_detail", post_id=parent_post_id)
+    # If GET, bounce to the comment’s thread
+    return redirect("comment_detail", comment_id=comment_id)
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def reply_to_comment(request, comment_id):
+    # Alias to the existing implementation
+    return reply_comment(request, comment_id)
