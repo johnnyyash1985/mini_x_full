@@ -60,6 +60,87 @@
   document.addEventListener('click', wire, true);
 })();
 </script>
+<!-- Delete confirm modal + hidden delete form -->
+<dialog id="confirmDeleteModal" class="rounded-2xl p-0 shadow-xl" style="border:none;max-width:520px;width:92%;">
+  <form method="dialog" style="padding:0;margin:0">
+    <div class="p-4">
+      <h2 class="text-lg font-semibold mb-2">Delete this item?</h2>
+      <p class="text-gray-600 mb-4">This cannot be undone.</p>
+      <div class="flex gap-2 justify-end">
+        <button value="cancel" class="px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200">Cancel</button>
+        <button id="confirmDeleteBtn" value="confirm" class="px-3 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700">Yes, delete</button>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+<!-- Hidden form that will POST to the delete URL with CSRF -->
+<form id="deleteForm" method="post" style="display:none">
+  {% csrf_token %}
+  <input type="hidden" name="next" id="deleteNextInput" value="">
+</form>
+
+<script>
+(function(){
+  // prevent card click-through on special targets
+  function wireStopProp(){
+    document.querySelectorAll('[data-stop-prop]').forEach(function(el){
+      if(el._wiredStopProp) return;
+      el._wiredStopProp = true;
+      el.addEventListener('click', function(e){ e.stopPropagation(); }, true);
+    });
+  }
+
+  // modal-based delete flow
+  function wireDelete(){
+    const modal = document.getElementById('confirmDeleteModal');
+    const form  = document.getElementById('deleteForm');
+    const nextInput = document.getElementById('deleteNextInput');
+
+    document.querySelectorAll('.js-delete').forEach(function(btn){
+      if (btn._wiredDelete) return;
+      btn._wiredDelete = true;
+
+      btn.addEventListener('click', function(e){
+        e.preventDefault();
+        e.stopPropagation(); // don’t trigger stretched links
+        const url  = btn.getAttribute('data-delete-url');
+        const next = btn.getAttribute('data-next') || window.location.pathname + window.location.search;
+
+        if (!url) return;
+
+        // Open modal; if confirmed, post the hidden form to the delete URL
+        if (typeof modal.showModal === 'function') {
+          modal.showModal();
+          const onClose = function(ev){
+            modal.removeEventListener('close', onClose);
+            if (modal.returnValue === 'confirm') {
+              form.setAttribute('action', url);
+              nextInput.value = next;
+              form.submit();
+            }
+          };
+          modal.addEventListener('close', onClose);
+        } else {
+          // Fallback (older browsers): confirm()
+          if (confirm('Delete this item? This cannot be undone.')) {
+            form.setAttribute('action', url);
+            nextInput.value = next;
+            form.submit();
+          }
+        }
+      }, true);
+    });
+  }
+
+  function boot(){
+    wireStopProp();
+    wireDelete();
+  }
+  document.addEventListener('DOMContentLoaded', boot);
+  document.addEventListener('click', boot, true);
+})();
+</script>
 </body>
 </html>
 <!-- Font Awesome for icons -->
