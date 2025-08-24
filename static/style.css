@@ -1,0 +1,20 @@
+
+/* Post feed styling */
+.feed {
+    margin-top: 20px;
+}
+.post-box {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 6px;
+    background: #fff;
+}
+.post-box .actions a {
+    margin-right: 15px;
+    text-decoration: none;
+    color: #555;
+}
+.post-box .actions a:hover {
+    color: #000;
+}

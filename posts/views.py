@@ -49,3 +49,8 @@ def add_comment(request, post_id):
         if content:
             Comment.objects.create(post=post, user=request.user, content=content)
     return redirect('feed')
+
+from django.http import HttpResponse
+
+def comment_post(request, post_id):
+    return HttpResponse("Comment feature coming soon!")

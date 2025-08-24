@@ -22,13 +22,28 @@
           <span class="ml-auto text-xs px-2 py-1 rounded-full bg-gray-100">Repost</span>
         {% endif %}
       </div>
+
       <p class="mt-2 whitespace-pre-wrap">{{ post.content }}</p>
 
-      <div class="mt-3 flex items-center gap-4 text-sm">
-        <a href="{% url 'like_post' post.id %}" class="hover:underline">Like ({{ post.likes.count }})</a>
-        <a href="{% url 'repost' post.id %}" class="hover:underline">Repost</a>
-        <button onclick="document.getElementById('cform-{{ post.id }}').classList.toggle('hidden')" class="hover:underline">
-          Comment ({{ post.comments.count }})
+      <!-- Icon-only actions -->
+      <div class="mt-3 flex items-center gap-6 text-xl">
+        <a class="hover:opacity-70" href="{% url 'like_post' post.id %}" title="Like">
+          {% if request.user in post.likes.all %}
+            <i class="fa-solid fa-heart"></i>
+          {% else %}
+            <i class="fa-regular fa-heart"></i>
+          {% endif %}
+          <span class="text-sm align-middle ml-1">{{ post.likes.count }}</span>
+        </a>
+
+        <a class="hover:opacity-70" href="{% url 'repost' post.id %}" title="Repost">
+          <i class="fa-solid fa-retweet"></i>
+        </a>
+
+        <button class="hover:opacity-70" type="button" title="Comment"
+                onclick="document.getElementById('cform-{{ post.id }}').classList.toggle('hidden')">
+          <i class="fa-regular fa-comment"></i>
+          <span class="text-sm align-middle ml-1">{{ post.comments.count }}</span>
         </button>
       </div>
 
@@ -36,7 +51,8 @@
       <div class="mt-3 space-y-2">
         {% for c in post.comments.all %}
           <div class="text-sm bg-gray-50 rounded-xl p-2">
-            <a class="font-semibold hover:underline" href="/profiles/{{ c.user.username }}/">@{{ c.user.username }}</a> {{ c.content }}
+            <a class="font-semibold hover:underline" href="/profiles/{{ c.user.username }}/">@{{ c.user.username }}</a>
+            {{ c.content }}
             <span class="text-gray-400">· {{ c.created|timesince }} ago</span>
           </div>
         {% empty %}
