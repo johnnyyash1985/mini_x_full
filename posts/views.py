@@ -62,3 +62,43 @@ def post_detail(request, post_id):
     from .models import Post  # local import to avoid any circulars
     post = get_object_or_404(Post, id=post_id)
     return render(request, 'posts/detail.html', {'post': post})
+
+# ===== Comment actions =====
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, redirect
+from .models import Post, Comment
+
+@login_required
+def like_comment(request, comment_id):
+    c = get_object_or_404(Comment, id=comment_id)
+    if request.user in c.likes.all():
+        c.likes.remove(request.user)
+    else:
+        c.likes.add(request.user)
+    return redirect("post_detail", post_id=post_id)
+
+@login_required
+def reply_comment(request, comment_id):
+    c = get_object_or_404(Comment, id=comment_id)
+    if request.method == 'POST':
+        text = (request.POST.get('content') or '').strip()
+        if text:
+            Comment.objects.create(
+                user=request.user,
+                post=c.post,
+                parent=c,
+                content=text[:200],
+            )
+    return redirect("post_detail", post_id=post_id)
+
+@login_required
+def repost_comment(request, comment_id):
+    c = get_object_or_404(Comment, id=comment_id)
+    # Create a new Post quoting the comment
+    quote = f'“{c.content}” — @{c.user.username}'
+    Post.objects.create(
+        user=request.user,
+        content=quote[:280],
+        reposted_from=c.post
+    )
+    return redirect("post_detail", post_id=post_id)
