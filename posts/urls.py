@@ -13,7 +13,7 @@ urlpatterns = [
     # Comments
     path('post/<int:post_id>/comment/', views.add_comment, name='add_comment'),
     path('comment/<int:comment_id>/', views.comment_detail, name='comment_detail'),
-    path('comment/<int:comment_id>/reply/', views.reply_to_comment, name='reply_to_comment'),
+    path('comment/<int:comment_id>/reply/', views.reply_comment, name='reply_comment'),
     path('comment/<int:comment_id>/like/', views.like_comment, name='like_comment'),
     path('comment/<int:comment_id>/repost/', views.repost_comment, name='repost_comment'),
 

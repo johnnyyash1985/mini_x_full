@@ -1,3 +1,5 @@
+from django.contrib import messages
+from django.views.decorators.http import require_POST
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
@@ -182,34 +184,33 @@ from django.shortcuts import get_object_or_404, redirect
 @login_required
 def delete_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
+    # Only the author can delete
     if post.user != request.user:
         return HttpResponseForbidden("Not allowed")
+
     if request.method == "POST":
         post.delete()
-        next_url = request.GET.get("next")
-        if next_url:
-            return redirect(next_url)
-        return redirect("feed")
-    # If someone GETs the URL, just send them back to the post
-    return redirect("post_detail", post_id=post_id)
+        messages.success(request, "Post deleted.")
+        nxt = request.POST.get("next") or request.GET.get("next")
+        return redirect(nxt or "feed")
 
+    # GET -> show confirmation page
+    context = {"post": post, "next": request.GET.get("next", "")}
+    return render(request, "posts/confirm_delete.html", context)
 @login_required
 def delete_comment(request, comment_id):
-    comment = get_object_or_404(Comment, id=comment_id)
-    if comment.user != request.user:
-        return HttpResponseForbidden("Not allowed")
-    parent_post_id = comment.post_id
-    if request.method == "POST":
-        comment.delete()
-        next_url = request.GET.get("next")
-        if next_url:
-            return redirect(next_url)
-        return redirect("post_detail", post_id=parent_post_id)
-    # If GET, bounce to the comment’s thread
-    return redirect("comment_detail", comment_id=comment_id)
-from django.contrib.auth.decorators import login_required
-
-@login_required
-def reply_to_comment(request, comment_id):
-    # Alias to the existing implementation
-    return reply_comment(request, comment_id)
+    from django.shortcuts import get_object_or_404, redirect
+    from django.contrib.auth.decorators import login_required
+    from .models import Comment
+    @login_required
+    def _inner():
+        c = get_object_or_404(Comment, id=comment_id)
+        post_id = getattr(c, "post_id", None)
+        if c.user != request.user:
+            return redirect('post_detail', post_id=post_id) if post_id else redirect('feed')
+        # Save post_id before delete
+        pid = post_id
+        c.delete()
+        # Return to the post thread if we know it; otherwise to the feed
+        return redirect('post_detail', post_id=pid) if pid else redirect('feed')
+    return _inner()

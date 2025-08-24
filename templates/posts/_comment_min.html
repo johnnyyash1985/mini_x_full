@@ -1,6 +1,6 @@
 <div class="card comment-card p-3">
   {% if comment.id %}
-    {% if comment.id %}<a class="stretched-link" href="{% url 'comment_detail' comment.id %}"></a>{% endif %}
+    {% if comment.id %}<a class="stretched-link" href="{% if comment.id %}{% url 'comment_detail' comment.id %}{% else %}#{% endif %}"></a>{% endif %}
   {% endif %}
 
   <div class="text-sm text-gray-700 font-medium">@{{ comment.user.username }}</div>
@@ -18,7 +18,7 @@
     </a>
     {% if comment.id %}
     <a class="hover:opacity-70 inline-flex items-center gap-1"
-       href="{% url 'comment_detail' comment.id %}" title="View thread / Reply">
+       href="{% if comment.id %}{% url 'comment_detail' comment.id %}{% else %}#{% endif %}" title="View thread / Reply">
       <i class="fa-regular fa-comment"></i>{% if comment.replies.count %}<span>{{ comment.replies.count }}</span>{% endif %}
     </a>
     {% endif %}

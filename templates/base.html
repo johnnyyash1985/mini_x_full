@@ -47,6 +47,19 @@
       </div>
     </aside>
   </div>
+<script>
+(function(){
+  function wire(){
+    document.querySelectorAll('[data-stop-prop]').forEach(function(el){
+      if(el._wiredStopProp) return;
+      el._wiredStopProp = true;
+      el.addEventListener('click', function(e){ e.stopPropagation(); }, true);
+    });
+  }
+  document.addEventListener('DOMContentLoaded', wire);
+  document.addEventListener('click', wire, true);
+})();
+</script>
 </body>
 </html>
 <!-- Font Awesome for icons -->

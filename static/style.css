@@ -99,3 +99,7 @@
 .btn-primary:hover { opacity:.9; }
 .icon-btn { color:#6b7280; } .icon-btn:hover { opacity:.75; }
 .chip { font-size:.75rem; color:#6b7280; background:#f3f4f6; padding:.15rem .5rem; border-radius:999px; }
+
+/* Ensure action controls are clickable above stretched-link overlay */
+.action-row,
+.action-row * { position: relative; z-index: 20; }

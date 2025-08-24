@@ -19,10 +19,10 @@
       <a class="hover:opacity-70" href="{% url 'repost' post.id %}?next={{ request.get_full_path|urlencode }}" title="Repost">
         <i class="fa-solid fa-retweet"></i>
       </a>
-      <span class="text-sm text-gray-500">{{ post.comments.count }} comments</span>
+      <span class="text-sm text-gray-500"><i class="fa-regular fa-comment"></i> {{ post.comments.count }} comments</span>
 
       {% if post.user_id == request.user.id %}
-        <form class="inline ml-auto" method="post" action="{% url 'delete_post' post.id %}?next={{ request.get_full_path|urlencode }}">
+        <form class="inline ml-auto" method="post" action="{% url 'delete_post' post.id %}?next={{ request.get_full_path|urlencode }}" data-stop-prop="1">
           {% csrf_token %}
           <button type="submit" title="Delete" class="hover:opacity-70">
             <i class="fa-regular fa-trash-can"></i>

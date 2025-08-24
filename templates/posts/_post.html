@@ -4,14 +4,22 @@
     <div class="text-xs text-gray-500">Repost</div>
   {% endif %}
   <div class="mt-1 whitespace-pre-wrap">{{ post.content }}</div>
-  <div class="mt-2 flex items-center gap-4 text-sm">
+  <div class="mt-2 flex items-center action-row gap-4 text-sm">
     <a href="/post/{{ post.id }}/like/" class="hover:underline">❤ {{ post.likes.count }}</a>
     <form method="post" action="/post/{{ post.id }}/comment/" class="inline">
       {% csrf_token %}
       <input type="text" name="content" placeholder="Reply…" class="border rounded px-2 py-1 text-sm w-60" />
       <button class="ml-1 px-2 py-1 bg-gray-200 rounded">Reply</button>
     </form>
-    <a href="/post/{{ post.id }}/repost/" class="hover:underline">↻ Repost</a>
+    <a href="/post/{{ post.id }}/repost/" class="hover:underline">↻ \1
+{% if post.user_id == request.user.id %}
+\1{% csrf_token %}
+  <button type="submit" title="Delete" class="text-gray-500 hover:text-red-600 align-middle">
+    <i class="fa-regular fa-trash-can"></i>
+  </button>
+</form>
+{% endif %}
+
   </div>
   {% if post.comments.all %}
   <div class="mt-2 space-y-1">
