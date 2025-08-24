@@ -18,7 +18,7 @@ def feed(request):
         content = request.POST.get('content')
         if content:
             Post.objects.create(user=request.user, content=content)
-            return redirect('feed')
+            return redirect("post_detail", post_id=post_id)
 
     # Suggestions: not me, not already followed
     exclude_ids = set(following_ids)
@@ -33,13 +33,13 @@ def like_post(request, post_id):
         post.likes.remove(request.user)
     else:
         post.likes.add(request.user)
-    return redirect('feed')
+    return redirect("post_detail", post_id=post_id)
 
 @login_required
 def repost(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     Post.objects.create(user=request.user, content=post.content, reposted_from=post)
-    return redirect('feed')
+    return redirect("post_detail", post_id=post_id)
 
 @login_required
 def add_comment(request, post_id):
@@ -48,9 +48,17 @@ def add_comment(request, post_id):
         content = request.POST.get('content')
         if content:
             Comment.objects.create(post=post, user=request.user, content=content)
-    return redirect('feed')
+    return redirect("post_detail", post_id=post_id)
 
 from django.http import HttpResponse
 
 def comment_post(request, post_id):
     return HttpResponse("Comment feature coming soon!")
+
+# --- added for post detail navigation ---
+from django.shortcuts import get_object_or_404, redirect
+
+def post_detail(request, post_id):
+    from .models import Post  # local import to avoid any circulars
+    post = get_object_or_404(Post, id=post_id)
+    return render(request, 'posts/detail.html', {'post': post})
