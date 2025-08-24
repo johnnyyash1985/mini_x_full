@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -102,3 +103,53 @@ def repost_comment(request, comment_id):
         reposted_from=c.post
     )
     return redirect("feed")
+
+
+@login_required
+def like_comment(request, comment_id):
+    c = get_object_or_404(Comment, id=comment_id)
+    if request.user in c.likes.all():
+        c.likes.remove(request.user)
+    else:
+        c.likes.add(request.user)
+    next_url = request.META.get("HTTP_REFERER") or reverse("post_detail", args=[c.post_id])
+    return redirect(next_url)
+
+
+@login_required
+def reply_comment(request, comment_id):
+    c = get_object_or_404(Comment, id=comment_id)
+    if request.method == 'POST':
+        text = (request.POST.get('content') or '').strip()
+        if text:
+            Comment.objects.create(
+                user=request.user,
+                post=c.post,
+                parent=c,
+                content=text[:200],
+            )
+    next_url = request.META.get("HTTP_REFERER") or reverse("post_detail", args=[c.post_id])
+    return redirect(next_url)
+
+
+@login_required
+def repost_comment(request, comment_id):
+    c = get_object_or_404(Comment, id=comment_id)
+    quote = f'“{c.content}” — @{c.user.username}'
+    Post.objects.create(user=request.user, content=quote[:280], reposted_from=c.post)
+    next_url = request.META.get("HTTP_REFERER") or reverse("feed")
+    return redirect(next_url)
+
+
+@login_required
+def comment_thread(request, comment_id):
+    root = get_object_or_404(Comment, id=comment_id)
+    return render(request, 'posts/comment_thread.html', {'root': root, 'post': root.post})
+
+
+@login_required
+def post_detail(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    # Only top-level comments; replies are rendered recursively in the partial
+    top_comments = post.comments.filter(parent__isnull=True).order_by("created")
+    return render(request, 'posts/detail.html', {'post': post, 'top_comments': top_comments})

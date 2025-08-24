@@ -28,60 +28,10 @@
   </div>
 </div>
 
-<!-- Comments list -->
+<!-- Top-level comments only; each includes its whole nested chain -->
 <div class="mt-4 space-y-2">
-  {% for c in post.comments.all %}
-    <div class="bg-white rounded-2xl shadow p-3 text-sm">
-      <div class="flex items-center gap-2 text-gray-600">
-        <a class="font-semibold hover:underline text-gray-900" href="/profiles/{{ c.user.username }}/">@{{ c.user.username }}</a>
-        <span>· {{ c.created|timesince }} ago</span>
-      </div>
-
-      <div class="mt-1 whitespace-pre-wrap">{{ c.content }}</div>
-
-      <!-- Comment actions -->
-      <div class="mt-2 flex items-center gap-6 text-lg">
-        <a class="hover:opacity-70" href="{% url 'like_comment' c.id %}" title="Like comment">
-          {% if request.user in c.likes.all %}
-            <i class="fa-solid fa-heart"></i>
-          {% else %}
-            <i class="fa-regular fa-heart"></i>
-          {% endif %}
-          <span class="text-xs align-middle ml-1">{{ c.likes.count }}</span>
-        </a>
-
-        <button class="hover:opacity-70" type="button" title="Reply"
-                onclick="document.getElementById('reply-{{ c.id }}').classList.toggle('hidden')">
-          <i class="fa-regular fa-comment"></i>
-        </button>
-
-        <a class="hover:opacity-70" href="{% url 'repost_comment' c.id %}" title="Repost comment">
-          <i class="fa-solid fa-retweet"></i>
-        </a>
-      </div>
-
-      <!-- Inline reply form -->
-      <form id="reply-{{ c.id }}" action="{% url 'reply_comment' c.id %}" method="post" class="hidden mt-2">
-        {% csrf_token %}
-        <input name="content" maxlength="200" class="w-full border rounded-xl p-2" placeholder="Reply…" />
-        <div class="text-right mt-2">
-          <button class="px-3 py-1 rounded-lg border hover:bg-gray-50">Reply</button>
-        </div>
-      </form>
-
-      <!-- Render replies (one level) -->
-      {% if c.replies.all %}
-        <div class="mt-2 space-y-1">
-          {% for r in c.replies.all %}
-            <div class="bg-gray-50 rounded-xl p-2">
-              <a class="font-semibold hover:underline" href="/profiles/{{ r.user.username }}/">@{{ r.user.username }}</a>
-              {{ r.content }}
-              <span class="text-gray-400">· {{ r.created|timesince }} ago</span>
-            </div>
-          {% endfor %}
-        </div>
-      {% endif %}
-    </div>
+  {% for c in top_comments %}
+    {% include 'posts/_comment.html' with comment=c %}
   {% empty %}
     <p class="text-sm text-gray-500">Be the first to comment.</p>
   {% endfor %}
