@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="bg-white rounded-2xl shadow p-6">
+  <div class="flex items-center gap-4">
+    {% if profile_user.profile.avatar %}
+      <img src="{{ profile_user.profile.avatar.url }}" class="w-20 h-20 rounded-full object-cover" alt="">
+    {% else %}
+      <div class="w-20 h-20 rounded-full bg-gray-200"></div>
+    {% endif %}
+    <div>
+      <h2 class="text-xl font-bold">@{{ profile_user.username }}</h2>
+      <p class="text-gray-600">{{ profile_user.profile.bio }}</p>
+      <p class="text-sm text-gray-500 mt-1">{{ followers_count }} Followers · {{ following_count }} Following</p>
+    </div>
+    <div class="ml-auto">
+      {% if request.user != profile_user %}
+        {% if is_following %}
+          <a href="/social/follow/{{ profile_user.username }}/" class="px-4 py-2 rounded-xl border hover:bg-gray-50">Unfollow</a>
+        {% else %}
+          <a href="/social/follow/{{ profile_user.username }}/" class="px-4 py-2 rounded-xl bg-black text-white hover:opacity-90">Follow</a>
+        {% endif %}
+      {% else %}
+        <a href="/profiles/edit/" class="px-4 py-2 rounded-xl border hover:bg-gray-50">Edit Profile</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

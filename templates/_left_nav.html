@@ -1,0 +1,10 @@
+<nav class="sticky top-4 space-y-2">
+  <a href="/" class="block p-2 rounded hover:bg-gray-200">Home</a>
+  {% if user.is_authenticated %}
+    <a href="/profiles/{{ user.username }}/" class="block p-2 rounded hover:bg-gray-200">Profile</a>
+    <a href="/profiles/edit/" class="block p-2 rounded hover:bg-gray-200">Edit Profile</a>
+    <a href="/admin/" class="block p-2 rounded hover:bg-gray-200">Admin</a>
+  {% else %}
+    <a href="/admin/login/" class="block p-2 rounded hover:bg-gray-200">Login</a>
+  {% endif %}
+</nav>

@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Edit Profile</h2>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label>Bio:</label><br>
+    <input type="text" name="bio" value="{{ profile.bio }}"><br>
+    <label>Avatar:</label><br>
+    <input type="file" name="avatar"><br>
+    <button type="submit">Save</button>
+</form>
+{% endblock %}

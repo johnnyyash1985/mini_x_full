@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mini-X</title>
+  <!-- Tailwind (dev CDN); we can switch to a build later -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-900">
+  <div class="max-w-6xl mx-auto grid grid-cols-12 gap-4 p-4">
+    <!-- Left nav -->
+    <aside class="col-span-3 hidden md:block">
+      <nav class="sticky top-4 space-y-2">
+        <a href="/" class="block px-3 py-2 rounded-xl hover:bg-gray-100 font-medium">Home</a>
+        <a href="/profiles/{{ request.user.username }}/" class="block px-3 py-2 rounded-xl hover:bg-gray-100">Profile</a>
+        <a href="/profiles/edit/" class="block px-3 py-2 rounded-xl hover:bg-gray-100">Edit Profile</a>
+        <a href="/admin/" class="block px-3 py-2 rounded-xl hover:bg-gray-100">Admin</a>
+        <a href="/accounts/logout/" class="block px-3 py-2 rounded-xl hover:bg-gray-100">Logout</a>
+      </nav>
+    </aside>
+
+    <!-- Center column -->
+    <main class="col-span-12 md:col-span-6">
+      {% block content %}{% endblock %}
+    </main>
+
+    <!-- Right sidebar -->
+    <aside class="col-span-3 hidden lg:block">
+      <div class="sticky top-4 space-y-4">
+        <div class="bg-white rounded-2xl shadow p-4">
+          <h3 class="font-semibold mb-3">Who to follow</h3>
+          <div class="space-y-2">
+            {% for u in suggest_users %}
+              <div class="flex items-center justify-between">
+                <a href="/profiles/{{ u.username }}/" class="hover:underline">@{{ u.username }}</a>
+                <a href="/social/follow/{{ u.username }}/" class="text-sm px-3 py-1 rounded-full border hover:bg-gray-50">Follow</a>
+              </div>
+            {% empty %}
+              <p class="text-sm text-gray-500">All caught up.</p>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</body>
+</html>
