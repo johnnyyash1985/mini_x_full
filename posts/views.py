@@ -153,3 +153,24 @@ def post_detail(request, post_id):
     # Only top-level comments; replies are rendered recursively in the partial
     top_comments = post.comments.filter(parent__isnull=True).order_by("created")
     return render(request, 'posts/detail.html', {'post': post, 'top_comments': top_comments})
+
+
+@login_required
+def comment_detail(request, comment_id):
+    comment = get_object_or_404(Comment, id=comment_id)
+
+    # Reply inside this thread
+    if request.method == "POST":
+        content = (request.POST.get("content") or "").strip()
+        if content:
+            Comment.objects.create(
+                post=comment.post, user=request.user, content=content, parent=comment
+            )
+            return redirect("comment_detail", comment_id=comment.id)
+
+    context = {
+        "post": comment.post,
+        "root_comment": comment,
+    }
+    return render(request, "posts/comment_detail.html", context)
+
